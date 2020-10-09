@@ -1,0 +1,7 @@
+src/assets/tailwind.output.css
+
+
+# local env files
+.env.local
+.env.*.local
+node_modules
