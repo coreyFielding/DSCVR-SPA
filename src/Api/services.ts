@@ -21,7 +21,6 @@ export async function retrieveToken(url: string, payload: IUser) {
 }
 
 export function handleResponse(res: any) {
-  console.log("response", res);
   const data = res.data;
 
   if (data.error) {
@@ -40,7 +39,6 @@ export function logout() {
 }
 
 export function get(url: string): IResponse<any> {
-  console.log(APP_API_URL + url);
   return axios.get(APP_API_URL + url).then(handleResponse);
 }
 
