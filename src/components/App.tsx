@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, createContext } from "react";
 import Layout from "../Layout/index";
 import View from "../views";
 import { ViewportProvider, useViewport } from "../providers/Viewport";
@@ -8,9 +8,10 @@ import { GlobalStyles } from "./Themes/globalStyles";
 import { lightTheme, darkTheme } from "./Themes/Themes";
 import Routes from "../Routes";
 import { Route, Redirect } from "react-router-dom";
-import { connect, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import { RootState } from "../redux/reducers";
-import { FETCH_TRIBES } from "../redux/actions/tribes";
+
+export const UserProvider = createContext(undefined);
 
 const ProtectedRoute = ({ user, ...props }: any) => {
   const isAuthed = !!user;
@@ -22,36 +23,30 @@ const ProtectedRoute = ({ user, ...props }: any) => {
 };
 
 const App = ({ user }: any) => {
-  console.log(user);
   const [theme] = useDarkMode();
   const themeMode = theme === "light" ? lightTheme : darkTheme;
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(FETCH_TRIBES({ type: "tribes", query: { limit: 100 } }));
-  }, []);
-
   return (
     <ViewportProvider>
       <ThemeProvider theme={themeMode}>
-        <GlobalStyles />
-        <Layout>
-          {Routes.slice(1).map((route: any, index: number) => (
-            <ProtectedRoute
-              user={user}
-              key={index}
-              exact={route.exact}
-              path={route.path}
-              name={route.name}
-              icon={route.icon}
-              sidebar={route.sidebar}
-              component={route.component}
-              title={route.title}
-            />
-          ))}
-          <Route path={Routes[0].path} component={Routes[0].component} />
-        </Layout>
+        <UserProvider.Provider value={{ user }}>
+          <GlobalStyles />
+          <Layout>
+            {Routes.slice(1).map((route: any, index: number) => (
+              <ProtectedRoute
+                user={user}
+                key={index}
+                exact={route.exact}
+                path={route.path}
+                name={route.name}
+                icon={route.icon}
+                sidebar={route.sidebar}
+                component={route.component}
+                title={route.title}
+              />
+            ))}
+            <Route path={Routes[0].path} component={Routes[0].component} />
+          </Layout>
+        </UserProvider.Provider>
       </ThemeProvider>
     </ViewportProvider>
   );
@@ -62,7 +57,7 @@ interface IPropsState {
   tribes: any;
 }
 const mapStateToProps = (state: RootState) => ({
-  user: state.auth,
+  user: state.auth.user,
   tribes: state.tribes,
 });
 export default connect<IPropsState>(mapStateToProps)(App);

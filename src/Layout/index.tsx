@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import Sidebar from "../../src/Layout/Components/Sidebar/index";
 import SidebarLink from "./Components/Sidebar/NavLink";
 import { Router, Route, Switch } from "react-router-dom";
 import { useViewport } from "../providers/Viewport";
+import { UserProvider } from "../components/App";
 import history from "../helpers/history";
 
 const loading = <div className="pt-3"></div>;
@@ -19,13 +20,15 @@ const renderViews = (children: any) => {
   return <>{...children}</>;
 };
 
-const Layout: React.FunctionComponent = ({ children }: any) => {
+const Layout: React.FC = ({ children }: any) => {
   const { device } = useViewport();
+  const { user } = useContext(UserProvider);
+
   const open = history.location.pathname !== "/login";
   return (
     <div className="flex flex-row">
       <Router history={history}>
-        {open && (
+        {open && user && (
           <Sidebar
             width={device === "mobile" ? 0 : device === "tablet" ? 40 : 200}
             height={"100vh"}
@@ -37,8 +40,8 @@ const Layout: React.FunctionComponent = ({ children }: any) => {
         <main
           style={{
             position: "relative",
-            left: "200px",
-            width: "calc(100% - 200px)",
+            left: `${open ? "200px" : 0}`,
+            width: `${open ? "calc(100% - 200px)" : "100%"}`,
             overflowX: "hidden",
           }}
         >

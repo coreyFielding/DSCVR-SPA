@@ -42,8 +42,8 @@ export const FETCH = () => async (dispatch: any) => {
     let user = res[0].body;
 
     user.$merchant = res[2] && res[2].status < 300 ? res[2].body : { name: "" };
+    localStorage.setItem("user", JSON.stringify(user));
     dispatch(success("LOGIN_SUCCESS", user));
-    localStorage.setItem("user", user);
     history.push("/");
   } catch (error) {}
 };

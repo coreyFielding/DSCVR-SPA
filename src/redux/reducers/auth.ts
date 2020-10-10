@@ -7,37 +7,43 @@ interface AuthState {
 }
 
 const user = localStorage.getItem("user");
+const parseUser = (data: any) => {
+  if (!data) return {};
+  if (typeof data === "object") return data;
+  if (typeof data === "string") return JSON.parse(data);
+};
+
 const initialState: AuthState = {
-  user: user || null,
+  user: parseUser(localStorage.getItem("user")),
   error: null,
   loading: false,
 };
 
 const AuthReducer = (state = initialState, action: any) => {
-  console.log("action", action, "user", initialState.user);
-  switch (action.type) {
-    case LOGIN_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
+  if (user == null && user == undefined)
+    switch (action.type) {
+      case LOGIN_REQUEST:
+        return {
+          ...state,
+          loading: true,
+        };
 
-    case LOGIN_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        user: action.payload,
-      };
+      case LOGIN_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          user: action.payload,
+        };
 
-    case LOGOUT_REQUEST:
-      return {
-        ...state,
-        user: null,
-      };
+      case LOGOUT_REQUEST:
+        return {
+          ...state,
+          user: null,
+        };
 
-    default:
-      state;
-  }
+      default:
+        state;
+    }
 
   return state;
 };

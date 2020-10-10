@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { LOGOUT } from "../../../redux/actions/auth/index";
 import { Avatar } from "antd";
@@ -7,6 +7,7 @@ import { AiOutlineSetting, AiOutlineUser } from "react-icons/ai";
 import { useViewport } from "../../../providers/Viewport";
 import ThemeToggle from "../../../components/Themes/Toggler";
 import { useDarkMode } from "../../../components/Themes/useDarkMode";
+import { UserProvider } from "../../../components/App";
 
 interface ISidebar {
   width: number;
@@ -17,6 +18,7 @@ interface ISidebar {
 
 const SidebarHeader = () => {
   const { device } = useViewport();
+  const { user } = useContext(UserProvider);
 
   return (
     <Header className="border border-l-0 border-r-0 border-t-0">
@@ -32,8 +34,8 @@ const SidebarHeader = () => {
       <div className="flex justify-center items-center flex-col text-center">
         {device === "tablet" ? null : (
           <>
-            <span className="font-bold">Corey Fielding</span>
-            <span className="font-hairline">corey@dscvr-app.com</span>
+            <span className="font-bold">{user.name}</span>
+            <span className="font-hairline">{user.email}</span>
           </>
         )}
       </div>
@@ -59,6 +61,7 @@ const SidebarMain: React.FunctionComponent<{
   children: any;
 }> = ({ width, height, children }: ISidebar) => {
   const { device } = useViewport();
+  const { user } = useContext(UserProvider);
   const [xPos, setX] = useState(width);
 
   const toggleSidebar = () => {

@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Input, Row, Col } from "antd";
 import Select from "../../components/Select/index";
 import Form from "../../components/Form/index";
@@ -10,6 +11,7 @@ import {
 } from "../../components/Form/FormProvider";
 import * as Yup from "yup";
 import { useFormik, Formik } from "formik";
+import { FETCH_TRIBES } from "../../redux/actions/tribes";
 
 const { TextArea } = Input;
 const { StyledInput } = styles;
@@ -111,6 +113,12 @@ const RenderAddForm: React.FC = () => {
 };
 
 const AddPromotion: React.FC = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(FETCH_TRIBES({ type: "tribes", query: { limit: 100 } }));
+  }, []);
+
   return (
     <FormProvider initialVals={initialValues}>
       <RenderAddForm />
