@@ -10,7 +10,7 @@ const { request, success, failure, removeAuth } = Actions;
 export const LOGIN = (payload: IUser) => async (
   dispatch: Dispatch
 ): Promise<any> => {
-  dispatch(request("LOGIN_REQUEST"));
+  dispatch(request("LOGIN_REQUEST", true));
 
   const res = await login(payload);
   await dispatch<any>(FETCH());

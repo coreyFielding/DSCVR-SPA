@@ -1,4 +1,4 @@
-import React, { useEffect, createContext } from "react";
+import React, { createContext, useEffect } from "react";
 import Layout from "../Layout/index";
 import View from "../views";
 import { ViewportProvider, useViewport } from "../providers/Viewport";
@@ -7,14 +7,16 @@ import { useDarkMode } from "./Themes/useDarkMode";
 import { GlobalStyles } from "./Themes/globalStyles";
 import { lightTheme, darkTheme } from "./Themes/Themes";
 import Routes from "../Routes";
-import { Route, Redirect } from "react-router-dom";
+import { Route, Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { RootState } from "../redux/reducers";
+import axios from "axios";
+import history from "../helpers/history";
 
 export const UserProvider = createContext(undefined);
 
 const ProtectedRoute = ({ user, ...props }: any) => {
-  const isAuthed = !!user;
+  const isAuthed = user;
   return isAuthed ? (
     <Route path={props.path} exact render={() => <View {...props} />} />
   ) : (
@@ -22,9 +24,16 @@ const ProtectedRoute = ({ user, ...props }: any) => {
   );
 };
 
-const App = ({ user }: any) => {
+const App = ({ user, location }: any) => {
   const [theme] = useDarkMode();
   const themeMode = theme === "light" ? lightTheme : darkTheme;
+
+  useEffect(() => {
+    axios.interceptors.request.use((config) => {
+      return config;
+    });
+  }, [location]);
+
   return (
     <ViewportProvider>
       <ThemeProvider theme={themeMode}>
@@ -54,10 +63,8 @@ const App = ({ user }: any) => {
 
 interface IPropsState {
   user: any;
-  tribes: any;
 }
 const mapStateToProps = (state: RootState) => ({
   user: state.auth.user,
-  tribes: state.tribes,
 });
-export default connect<IPropsState>(mapStateToProps)(App);
+export default withRouter(connect<IPropsState>(mapStateToProps)(App));

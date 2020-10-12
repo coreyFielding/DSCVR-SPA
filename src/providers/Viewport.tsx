@@ -44,6 +44,5 @@ export const ViewportProvider = ({ children }: any) => {
 
 export const useViewport = () => {
   const { device } = useContext(viewportContext);
-  console.log(device);
   return { device };
 };

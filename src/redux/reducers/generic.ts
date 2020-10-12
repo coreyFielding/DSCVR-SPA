@@ -1,3 +1,5 @@
+import ActionButton from "antd/lib/modal/ActionButton";
+
 interface IPayload {
   id: string;
   type: string;
@@ -6,17 +8,17 @@ interface IPayload {
 }
 
 interface IResource {
-  loading: boolean;
+  pending: boolean;
   cache?: IPayload | null;
-  item?: IPayload | null;
+  data?: IPayload | null;
   type: string;
   name: string;
   id: string;
 }
 
 interface IResources {
-  loading: boolean;
-  items: IPayload[];
+  pending: boolean;
+  data: IPayload[];
   type: string;
   total: number;
   name: string;
@@ -26,17 +28,38 @@ interface IResources {
 type ResourceType = IResource | IResources;
 
 const initialState: ResourceType = {
-  loading: false,
+  pending: false,
   cache: null,
-  item: null,
+  data: null,
   type: "",
   name: "",
   id: "",
 };
 
-const GenericReducer = (state = initialState, action: any) => {
-  switch (action.type) {
-  }
+const updateState = (prevState: ResourceType, newVals: any) => {
+  return Object.assign({}, prevState, newVals);
 };
+
+const createReducer = (initialState: ResourceType, handlers: any) => {
+  return function reducer(state = initialState, action: any) {
+    if (handlers.hasOwnProperty(action.type)) {
+      return handlers[action.type](state, action);
+    }
+    return state;
+  };
+};
+
+const fetch = (state: ResourceType, action: any) => {
+  return updateState(state, { data: action.payload });
+};
+
+const pending = (state: ResourceType, action: any) => {
+  return updateState(state, { pending: action.payload });
+};
+
+const GenericReducer = createReducer(initialState, {
+  FETCH_SUCCESS: fetch,
+  FETCH_REQUEST: pending,
+});
 
 export default GenericReducer;
