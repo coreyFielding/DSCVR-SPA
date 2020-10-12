@@ -8,7 +8,7 @@ interface AuthState {
 
 const user = localStorage.getItem("user");
 const parseUser = (data: any) => {
-  if (!data) return {};
+  if (!data) return null;
   if (typeof data === "object") return data;
   if (typeof data === "string") return JSON.parse(data);
 };
@@ -40,7 +40,6 @@ const AuthReducer = (state = initialState, action: any) => {
           ...state,
           user: null,
         };
-
       default:
         state;
     }

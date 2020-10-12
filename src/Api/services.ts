@@ -24,7 +24,7 @@ export function handleResponse(res: any) {
   const data = res.data;
 
   if (data.error) {
-    if (res.status === 401) logout();
+    //if (res.status === 401) logout();
 
     return Promise.reject(data.error);
   }
@@ -33,6 +33,7 @@ export function handleResponse(res: any) {
 }
 
 export function logout() {
+  // TODO - not working
   axios.get(APP_API_URL + "/logout").then(() => {
     delete axios.defaults.headers.common["Authorization"];
   });

@@ -1,5 +1,7 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, createContext } from "react";
+import { withRouter } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useFetch } from "../../hooks/redux/useFetch";
 import { Input, Row, Col } from "antd";
 import Select from "../../components/Select/index";
 import Form from "../../components/Form/index";
@@ -9,10 +11,11 @@ import {
   FormContext,
   FormDispatchContext,
 } from "../../components/Form/FormProvider";
+import { UserProvider } from "../../components/App";
 import * as Yup from "yup";
 import { useFormik, Formik } from "formik";
-import { FETCH_TRIBES } from "../../redux/actions/tribes";
-
+import { FETCH_DATA } from "../../redux/actions/generic";
+import RenderCategories from "../AddPromotion/components/Categories";
 const { TextArea } = Input;
 const { StyledInput } = styles;
 
@@ -22,7 +25,12 @@ const initialValues = {
   description: "",
 };
 
+const DataProvider = createContext(null);
+
 const RenderAddForm: React.FC = () => {
+  const { user } = useContext(UserProvider);
+  console.log(user);
+  const { tribes } = useContext(DataProvider);
   const formDetails = useContext(FormContext);
   const setFormDetails = useContext(FormDispatchContext);
 
@@ -31,7 +39,7 @@ const RenderAddForm: React.FC = () => {
     tagline: Yup.string(),
   });
 
-  const { handleChange, touched, values, errors } = useFormik({
+  const { handleChange, values, errors } = useFormik({
     initialValues: { ...formDetails },
     validationSchema: schema,
     onSubmit: (values: any) => {
@@ -65,7 +73,7 @@ const RenderAddForm: React.FC = () => {
               <Select items={[{ name: "test" }]} />
             </Group>
             <Group label="Offer applies to" width="32">
-              <Select items={[{ name: "test" }]} />
+              {tribes ? <Select items={tribes!.items} /> : null}
             </Group>
           </div>
           <Group label="Title" display="inline">
@@ -106,24 +114,24 @@ const RenderAddForm: React.FC = () => {
             ) : null}
           </Group>
         </Col>
-        <Col span={6}>test</Col>
+        <Col span={6}>{RenderCategories()}</Col>
       </Form>
     </Row>
   );
 };
 
-const AddPromotion: React.FC = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(FETCH_TRIBES({ type: "tribes", query: { limit: 100 } }));
-  }, []);
-
+const AddPromotion: React.FC = ({ history }: any) => {
+  const { data: tribes } = useFetch({ type: "tribes", query: { limit: 100 } });
+  const fetched = {
+    tribes,
+  };
   return (
-    <FormProvider initialVals={initialValues}>
-      <RenderAddForm />
-    </FormProvider>
+    <DataProvider.Provider value={fetched}>
+      <FormProvider initialVals={initialValues}>
+        <RenderAddForm />
+      </FormProvider>
+    </DataProvider.Provider>
   );
 };
 
-export default AddPromotion;
+export default withRouter(AddPromotion);
